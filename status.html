@@ -49,10 +49,11 @@
     </header>
 
     <main>
-        <section class="container mx-auto px-6 py-24 flex items-center justify-center" style="min-height: 60vh;">
+        <section class="container mx-auto px-6 py-24 flex items-center justify-center" style="min-height: 70vh;">
             
             <div class="max-w-xl w-full bg-light-bg p-8 md:p-12 rounded-xl shadow-2xl border border-light-border text-center">
 
+                <!-- Success State -->
                 <div id="success-box" class="hidden space-y-4">
                     <svg class="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     
@@ -62,10 +63,25 @@
                     <p class="text-lg text-text-secondary">
                         Report is being updated, you will receive updated report within 5-10 minutes.
                         <br><br>
-                        <span class="font-semibold text-mid-primary">Please note, updates only occur during active market hours.</span>
+                        <span class="font-semibold text-mid-primary">Please note, this feature is only avalable during market hours.</span>
                     </p>
                 </div>
 
+                <!-- Queue State -->
+                <div id="queue-box" class="hidden space-y-4">
+                    <svg class="w-16 h-16 text-blue-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-dark-primary">
+                        You are in Queue
+                    </h1>
+                    <p class="text-lg text-text-secondary">
+                        You are already in queue and will be processed soon.
+                        <br><br>
+                        <span class="font-semibold text-mid-primary">Please note, this feature is only available during market hours.</span>
+                    </p>
+                </div>
+
+                <!-- Error State -->
                 <div id="error-box" class="hidden space-y-4">
                     <svg class="w-16 h-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     
@@ -106,10 +122,13 @@
             const state = params.get('state');
 
             const successBox = document.getElementById('success-box');
+            const queueBox = document.getElementById('queue-box');
             const errorBox = document.getElementById('error-box');
 
             if (state === 'success') {
                 successBox.classList.remove('hidden');
+            } else if (state === 'queue') {
+                queueBox.classList.remove('hidden');
             } else {
                 // Default to showing the error message
                 errorBox.classList.remove('hidden');
