@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPO Reports - Automated IPO Summaries</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        // Custom Tailwind Configuration for Monochrome Theme
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-primary': '#000000',
+                        'mid-primary': '#1f2937',
+                        'text-secondary': '#6b7280',
+                        'light-bg': '#ffffff',
+                        'light-border': '#e5e7eb',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Brevo Form Fonts -->
+    <style>
+      @font-face {
+        font-display: block;
+        font-family: Roboto;
+        src: url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/7529907e9eaf8ebb5220c5f9850e3811.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/25c678feafdc175a70922a116c9be3e7.woff) format("woff")
+      }
+
+      @font-face {
+        font-display: fallback;
+        font-family: Roboto;
+        font-weight: 600;
+        src: url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/6e9caeeafb1f3491be3e32744bc30440.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/71501f0d8d5aa95960f6475d5487d4c2.woff) format("woff")
+      }
+
+      @font-face {
+        font-display: fallback;
+        font-family: Roboto;
+        font-weight: 700;
+        src: url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/3ef7cf158f310cf752d5ad08cd0e7e60.woff2) format("woff2"), url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/ece3a1d82f18b60bcce0211725c476aa.woff) format("woff")
+      }
+
+      #sib-container input:-ms-input-placeholder {
+        text-align: left;
+        font-family: 'Inter', sans-serif;
+        color: #9ca3af;
+      }
+
+      #sib-container input::placeholder {
+        text-align: left;
+        font-family: 'Inter', sans-serif;
+        color: #9ca3af;
+      }
+    </style>
+    
+    <!-- Hardcoded Brevo Form Styles -->
+    
+    <style>
+      .sib-form-block {
+        text-align: left;
+      }
+      .sib-form-message-panel {
+        display: none;  
+      }
+    .sib-form-message-panel--active{
+        display: block;
+    }
+      .input--hidden {
+        position: absolute;
+        left: -5000px;
+        top: -5000px;
+      }
+      .entry__error {
+        display: none;
+      }
+      .sib-hide-loader-icon {
+        display: none;
+      }
+    </style>
+
+    <style>
+        body {
+            background: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* --- Custom Animations --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.9s ease forwards;
+            opacity: 0;
+        }
+
+        /* --- AI Text Typing --- */
+        .ai-text::after {
+            content: "✦";
+            color: #000000;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        
+        /* --- New Step Animation --- */
+        @keyframes stepIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-step-in {
+            animation: stepIn 0.5s ease forwards;
+        }
+
+        /* --- New Table Animation --- */
+        .placeholder-cell {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .table-row-in {
+            opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* --- Floating Effect --- */
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-light-bg font-sans text-dark-primary antialiased">
+
+    <!-- Header -->
+    <header class="sticky top-0 bg-light-bg/80 backdrop-blur-3xl z-50 border-b border-light-border/80">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-extrabold text-dark-primary">IPO Reports</a>
+            <a href="#subscribe" class="font-semibold text-sm border-2 border-dark-primary text-dark-primary px-5 py-2 rounded-xl hover:bg-dark-primary hover:text-light-bg transition-all duration-300">Subscribe</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Hero Section -->
+        <section class="container mx-auto px-6 pt-24 pb-16 grid md:grid-cols-2 gap-12 items-center">
+            <!-- Left Text Content -->
+            <div class="space-y-6 fade-in" style="animation-delay: 0.2s;">
+                <h1 class="text-4xl md:text-5xl font-extrabold leading-tight text-dark-primary">
+                    Timely IPO Reports.<br>
+                    <span class="text-mid-primary">Straight to Your Inbox.</span>
+                </h1>
+                <p class="text-lg text-text-secondary max-w-lg">
+                    Receive structured and consolidated IPO Details — company data, financials, and offer details — all in one place, organized.
+                </p>
+                
+                <!-- START - Brevo Form -->
+                <div class="max-w-lg pt-2">
+                    <div class="sib-form">
+                        <div id="sib-form-container" class="sib-form-container">
+                            <div id="error-message" class="sib-form-message-panel" style="font-size:14px; text-align:left; font-family:'Inter', sans-serif; color:#991b1b; background-color:#fef2f2; border-radius:12px; border:1px solid #fecaca; max-width:100%; padding: 1rem; margin-bottom: 1rem; display:none;">
+                                <div class="sib-form-message-panel__text sib-form-message-panel__text--center" style="display: flex; align-items: center;">
+                                <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px; flex-shrink: 0;">
+                                    <path d="M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-11.49 120h22.979c6.823 0 12.274 5.682 11.99 12.5l-7 168c-.268 6.428-5.556 11.5-11.99 11.5h-8.979c-6.433 0-11.722-5.073-11.99-11.5l-7-168c-.283-6.818 5.167-12.5 11.99-12.5zM256 340c-15.464 0-28 12.536-28 28s12.536 28 28 28 28-12.536 28 28-12.536-28-28-28z" />
+                                </svg>
+                                <span class="sib-form-message-panel__inner-text">
+                                    Please try again.
+                                </span>
+                                </div>
+                            </div>
+                            <div id="success-message" class="sib-form-message-panel" style="font-size:14px; text-align:left; font-family:'Inter', sans-serif; color:#1f2937; background-color:#fff; border-radius:12px; border:2px solid #10b981; max-width:100%; padding: 1rem; margin-bottom: 1rem;">
+                                <div class="sib-form-message-panel__text sib-form-message-panel__text--center" style="display: flex; align-items: center;">
+                                    <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px; color: #10b981; flex-shrink: 0;">
+                                      <path fill="currentColor" d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 464c-118.664 0-216-96.055-216-216 0-118.663 96.055-216 216-216 118.664 0 216 96.055 216 216 0 118.663-96.055 216-216 216zm141.63-274.961L217.15 376.071c-4.705 4.667-12.303 4.637-16.97-.068l-85.878-86.572c-4.667-4.705-4.637-12.303.068-16.97l8.52-8.451c4.705-4.667 12.303-4.637 16.97.068l68.976 69.533 163.441-162.13c4.705-4.667 12.303-4.637 16.97.068l8.451 8.52c4.668 4.705 4.637 12.303-.068 16.97z" />
+                                    </svg>
+                                    <span class="sib-form-message-panel__inner-text">
+                                      Check your inbox; the report will be sent to you soon if you have not requested it before.
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="sib-container" class="sib-container--medium sib-container--horizontal" style="text-align:center; background-color:transparent; max-width:100%; border-radius:0; border-width:0; direction:ltr">
+                                <form id="sib-form" method="POST" action="https://f2792238.sibforms.com/serve/MUIFAE1PhOPWzqCPlUGoXM6Wl3bNFUz1yLbu9vflyQ2agGMR5PPbglym6dnzEDRLbc_JVGCgb7FWJBO3JnB5KfNPghLQqUrd9qoOEQyddDYyc-Yv4u5yFQgtOOWW-x6avHI7uMpnZwuY4_kFbBt1bTlAqWguJG-hrpP3-qK6BXNDpu4WRBWIHt8AVRJ2vtHVhSxoGOh2MWFMEpptHw==" data-type="subscription">
+                                    <div class="flex flex-row gap-3 items-center">
+                                        <div class="sib-input sib-form-block flex-grow w-full">
+                                            <div class="form__entry entry_block">
+                                                <div class="form__label-row form__label-row--horizontal">
+                                                    <div class="entry__field">
+                                                        <input class="input w-full px-5 py-3 rounded-xl border-2 border-dark-primary bg-gray-50 text-base" style="width:100%; box-sizing:border-box; padding:12px 16px; font-size:16px; font-family:Inter, sans-serif; border:2px solid #000; border-radius:999px; background-color:#fff; color:#000; height:48px; outline:none; -webkit-appearance:none;" onfocus="this.style.outline='none'; this.style.boxShadow='none';" onblur="this.style.outline='none'; this.style.boxShadow='none';" type="text" id="EMAIL" name="EMAIL" autocomplete="off" placeholder="Enter your email" data-required="true" required />
+                                                    </div>
+                                                </div>
+                                                <label class="entry__error entry__error--primary" style="font-size:12px; text-align:left; font-family:'Inter', sans-serif; color:#991b1b; padding-top: 4px;">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="sib-form-block">
+                                            <button class="sib-form-block__button sib-form-block__button-with-loader w-full sm:w-auto flex-shrink-0 bg-dark-primary text-light-bg font-semibold px-6 rounded-full hover:bg-mid-primary transition-all duration-300 flex items-center justify-center whitespace-nowrap" style="height: 48px;" form="sib-form" type="submit">
+                                                <svg class="icon clickable__icon progress-indicator__icon sib-hide-loader-icon" viewBox="0 0 512 512" style="width: 20px; height: 20px; fill: currentColor;">
+                                                    <path d="M460.116 373.846l-20.823-12.022c-5.541-3.199-7.54-10.159-4.663-15.874 30.137-59.886 28.343-131.652-5.386-189.946-33.641-58.394-94.896-95.833-161.827-99.676C261.028 55.961 256 50.751 256 44.352V20.309c0-6.904 5.808-12.337 12.703-11.982 83.556 4.306 160.163 50.864 202.11 123.677 42.063 72.696 44.079 162.316 6.031 236.832-3.14 6.148-10.75 8.461-16.728 5.01z" />
+                                                </svg>
+                                                Get Demo Report
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="text" name="email_address_check" value="" class="input--hidden">
+                                    <input type="hidden" name="locale" value="en">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END - Brevo Form -->
+                 <div>
+                    <p style="font-size: 12px;"> <sup>*</sup>Requesting Demo Reports you agree to <a href="https://drive.google.com/file/d/1jnoCaOhTFBV1Imu_NSIs_pM8pjAPRIDB/view?usp=sharing" target="_blank" style="text-decoration: underline;">Disclaimer</a>, <a href="https://drive.google.com/file/d/1olxj95vlUMtUe8QS0FsjLipGQJRVoect/view?usp=sharing" target="_blank" style="text-decoration: underline;">Privacy Policy</a> and <a href="https://drive.google.com/file/d/19Mcoy1GESao2C4ywsC7GLfRWOQcOQNa2/view?usp=sharing" target="_blank" style="text-decoration: underline;"> Terms of Service</a>.</p>
+                 </div>
+            </div>
+
+            <!-- Right Animation -->
+            <div class="relative float mt-12 md:mt-0">
+                <div id="report-visual" class="bg-white p-6 rounded-xl shadow-2xl border border-light-border min-h-[420px]">
+                    <div id="animation-container" class="opacity-0 transition-opacity duration-1000">
+                        <div class="flex items-center mb-4 pb-4 border-b border-light-border">
+                            <div class="w-3 h-3 bg-red-400 rounded-full mr-2"></div>
+                            <div class="w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
+                            <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                            <!-- <p class="ml-auto text-sm font-mono text-gray-500"></p> -->
+                        </div>
+                        <div id="animation-steps" class="space-y-4 pt-4 min-h-[250px]">
+                            <!-- JS Animation -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="bg-gray-50 py-24 px-6 border-y border-light-border">
+            <div class="container mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-4 text-dark-primary">What's Inside the Report?</h2>
+                <p class="text-lg text-text-secondary mb-16 max-w-3xl mx-auto">We provides a consolidated overview of the IPO market, featuring a detailed table of active IPOs with company and filing details, as well as information on upcoming IPOs. It is delivered directly to your inbox daily before 9:00 am, but only on days when there are any active IPOs to report.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left max-w-6xl mx-auto">
+                    <!-- Cards -->
+                    <div class="bg-light-bg p-8 rounded-xl shadow-md border border-light-border transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                        <h3 class="text-xl font-bold mb-3 text-mid-primary">Offering Details</h3>
+                        <p class="text-text-secondary">Key dates, issue size, price band, issue type, and lot size. All the numbers in one place.</p>
+                    </div>
+                    <div class="bg-light-bg p-8 rounded-xl shadow-md border border-light-border transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                        <h3 class="text-xl font-bold mb-3 text-mid-primary">Company Profile</h3>
+                        <p class="text-text-secondary">A summary of the company's core services and primary customers.</p>
+                    </div>
+                    <div class="bg-light-bg p-8 rounded-xl shadow-md border border-light-border transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                        <h3 class="text-xl font-bold mb-3 text-mid-primary">Financial Snapshot</h3>
+                        <p class="text-text-secondary">Essential metrics including Assets, Income, Profit After Tax, and Borrowings.</p>
+                    </div>
+                    <div class="bg-light-bg p-8 rounded-xl shadow-md border border-light-border transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                        <h3 class="text-xl font-bold mb-3 text-mid-primary">Objectives</h3>
+                        <p class="text-text-secondary">A breakdown of how the company intends to use the funds raised.</p>
+                    </div>
+                     <div class="bg-light-bg p-8 rounded-xl shadow-md border border-light-border transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                        <h3 class="text-xl font-bold mb-3 text-mid-primary">Subscription Trends</h3>
+                        <p class="text-text-secondary">Live subscription tracking including retail category figures (when available).</p>
+                    </div>
+                     <div class="bg-light-bg p-8 rounded-xl shadow-md border border-light-border transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                        <h3 class="text-xl font-bold mb-3 text-mid-primary">Upcoming IPO Details</h3>
+                        <p class="text-text-secondary">Key information on forthcoming IPOs, at the end of report.</p>
+                    </div>
+                    <div class="bg-light-bg p-8 rounded-xl shadow-md border border-light-border transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                        <h3 class="text-xl font-bold mb-3 text-mid-primary">Request Updated Report</h3>
+                        <p class="text-text-secondary">Refresh the report with the latest market data.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Subscription/CTA Section -->
+        <section id="subscribe" class="bg-light-bg text-dark-primary py-24 px-6 relative">
+            <div class="container mx-auto max-w-3xl text-center">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Get Daily Reports for Active IPOs</h2>
+                <p class="text-lg text-text-secondary mb-12" style="margin-bottom:0px;padding-bottom:0px;">
+                    Subscribe now to receive Mainboard IPO reports directly in your inbox. (We'll include other categories soon!)
+                </p>
+
+            <iframe id="brevo-iframe" width="540" height="480" src="https://f2792238.sibforms.com/serve/MUIFAJLRThCCzpXqqXi2gsx64H9nWk7eIt_Gay7oBcO7L_YCqZ4wojWfltaXFKBJD-x9dH91uwtYU5WoCRtDXqfIH65OiY0TOkdlIiO1IxRLfa6NI55Bw4m6V_3isBRD2CfthGDSORKazhIhGATPiVlACC3JHr7WID95SJCRtRDrBDS4pPkEN9eF3-UP2ZL06J5ukjFZH91Op8S_8A==" frameborder="0" scrolling="no"  style="display: block;margin-left: auto;margin-right: auto;max-width: 100%; margin-top:0px; padding-top:0px;"></iframe>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-primary text-gray-300 py-12 px-6">
+        <div class="container mx-auto">
+            <div class="text-center">
+                <div class="mt-4 flex justify-center gap-6">
+                    <a href="https://drive.google.com/file/d/1jnoCaOhTFBV1Imu_NSIs_pM8pjAPRIDB/view?usp=sharing" class="text-xs hover:text-white transition-colors" target="_blank">Disclaimer</a>
+                    <a href="https://drive.google.com/file/d/1olxj95vlUMtUe8QS0FsjLipGQJRVoect/view?usp=sharing" class="text-xs hover:text-white transition-colors" target="_blank">Privacy Policy</a>
+                    <a href="https://drive.google.com/file/d/19Mcoy1GESao2C4ywsC7GLfRWOQcOQNa2/view?usp=sharing" class="text-xs hover:text-white transition-colors" target="_blank">Terms of Service</a>
+                </div>
+            </div>
+            <p class="text-xs text-center text-gray-400 mt-8 max-w-4xl mx-auto">
+                Disclaimer: This service provides consolidated information from publicly available documents, resources. This is not financial advice, an endorsement, or a recommendation. We are not registered with SEBI as research analyst or investment advisor. All information is for informational purpose only. Please conduct your own due diligence.
+            </p>
+             <!-- Creator Credit -->
+            <!-- <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-400">
+                    Designed & Developed by 
+                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-gray-300 hover:text-white transition-colors">
+                        the service creator
+                    </a>
+                </p>
+            </div> -->
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const animationContainer = document.getElementById('animation-container');
+
+            if (animationContainer) {
+                const stepsContainer = document.getElementById('animation-steps');
+                if (!stepsContainer) return;
+
+                const steps = [
+                    'Fetching public filings...',
+                    'Cleaning & structuring data...',
+                    'Preparing summaries & Organizing data...',
+                    'Generating structured report...'
+                ];
+
+                let stepIndex = 0;
+                const stepInterval = 1500; // ms per step
+  
+
+const renderTableAnimation = () => {
+    const tableContainer = document.createElement('div');
+    tableContainer.className = 'placeholder-table w-full text-sm animate-step-in space-y-4 pt-6';
+    
+    const tableHTML = `
+        <div class="space-y-2">
+            <div class="h-6 w-1/3 placeholder-cell"></div>
+            <div class="h-4 w-2/3 placeholder-cell"></div>
+        </div>
+        <br>        
+        <div class="table-header mb-4 border-b border-gray-200 pb-2">
+            <div class="grid grid-cols-12 gap-2 font-medium">
+                <div class="h-4 col-span-3 placeholder-cell"></div>
+                <div class="h-4 col-span-3 placeholder-cell"></div>
+                <div class="h-4 col-span-3 placeholder-cell"></div>
+                <div class="h-4 col-span-3 placeholder-cell"></div>
+            </div>
+        </div>
+        <div class="table-body-rows space-y-3"></div> 
+
+  
+    `;
+    tableContainer.innerHTML = tableHTML;
+    stepsContainer.appendChild(tableContainer);
+
+    const tableBody = stepsContainer.querySelector('.table-body-rows');
+    const totalRows = 4;
+    
+    // Consistent table row structure
+    const rowStructure = `
+        <div class="grid grid-cols-12 gap-2 table-row-in">
+            <div class="h-4 col-span-3 placeholder-cell"></div>
+            <div class="h-4 col-span-3 placeholder-cell"></div>
+            <div class="h-4 col-span-3 placeholder-cell"></div>
+            <div class="h-4 col-span-3 placeholder-cell"></div>
+        </div>
+    `;
+    
+    for (let i = 0; i < totalRows; i++) {
+        setTimeout(() => {
+            const row = document.createElement('div');
+            row.innerHTML = rowStructure;
+            tableBody.appendChild(row);
+        }, i * 120);
+    }
+};
+                
+                const processSteps = () => {
+                    if (stepIndex >= steps.length) {
+                        // Last step is showing; now render the table below it.
+                        setTimeout(renderTableAnimation, 800);
+                        return;
+                    }
+
+                    // Mark previous step as complete
+                    if (stepIndex > 0) {
+                        const prevStepEl = stepsContainer.children[stepIndex - 1];
+                        if (prevStepEl) {
+                            const iconContainer = prevStepEl.querySelector('.icon-container');
+                            if (iconContainer) {
+                                iconContainer.innerHTML = `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                            }
+                        }
+                    }
+
+                    // Create and add the current step
+                    const stepEl = document.createElement('div');
+                    stepEl.className = 'flex items-center text-mid-primary text-base leading-relaxed opacity-0 animate-step-in';
+                    const isLastStep = stepIndex === steps.length - 1;
+                    const spinnerIcon = `<div class="w-4 h-4 border-2 border-gray-300 border-t-mid-primary rounded-full animate-spin"></div>`;
+
+                    stepEl.innerHTML = `
+                        <div class="icon-container w-5 h-5 mr-4 flex-shrink-0 flex items-center justify-center">${spinnerIcon}</div>
+                        <p class="${isLastStep ? 'ai-text' : ''}">${steps[stepIndex]}</p>
+                    `;
+                    stepsContainer.appendChild(stepEl);
+
+                    stepIndex++;
+                    setTimeout(processSteps, stepInterval);
+                };
+
+                // Delay start to sync with page load animations
+                setTimeout(() => {
+                    animationContainer.style.opacity = 1;
+                    setTimeout(processSteps, 500);
+                }, 500);
+            }
+        });
+
+    </script>
+
+    <!-- Brevo Scripts -->
+    <script>
+        window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
+        window.LOCALE = 'en';
+        window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "Invalid email address";
+
+        window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
+
+        window.GENERIC_INVALID_MESSAGE = "Invalid email address.";
+
+        window.translation = {
+            common: {
+            selectedList: '{quantity} list selected',
+            selectedLists: '{quantity} lists selected',
+            selectedOption: '{quantity} selected',
+            selectedOptions: '{quantity} selected',
+            }
+        };
+
+        var AUTOHIDE = Boolean(1);
+    </script>
+    <script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
+
+</body>
+</html>

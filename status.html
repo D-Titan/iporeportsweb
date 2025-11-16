@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Status - IPO Reports</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        // Custom Tailwind Configuration
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-primary': '#000000',
+                        'mid-primary': '#1f2937',
+                        'text-secondary': '#6b7280',
+                        'light-bg': '#ffffff',
+                        'light-border': '#e5e7eb',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+      body {
+            background: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+      }
+    </style>
+</head>
+<body class="bg-light-bg font-sans text-dark-primary antialiased">
+
+    <header class="sticky top-0 bg-light-bg/80 backdrop-blur-3xl z-50 border-b border-light-border/80">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-extrabold text-dark-primary">IPO Reports</a>
+            <a href="/#subscribe" class="font-semibold text-sm border-2 border-dark-primary text-dark-primary px-5 py-2 rounded-xl hover:bg-dark-primary hover:text-light-bg transition-all duration-300">Subscribe</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="container mx-auto px-6 py-24 flex items-center justify-center" style="min-height: 60vh;">
+            
+            <div class="max-w-xl w-full bg-light-bg p-8 md:p-12 rounded-xl shadow-2xl border border-light-border text-center">
+
+                <div id="success-box" class="hidden space-y-4">
+                    <svg class="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-dark-primary">
+                        Report is on its way!
+                    </h1>
+                    <p class="text-lg text-text-secondary">
+                        Report is being updated, you will receive updated report within 5-10 minutes.
+                        <br><br>
+                        <span class="font-semibold text-mid-primary">Please note, updates only occur during active market hours.</span>
+                    </p>
+                </div>
+
+                <div id="error-box" class="hidden space-y-4">
+                    <svg class="w-16 h-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-dark-primary">
+                        An Error Occurred
+                    </h1>
+                    <p class="text-lg text-text-secondary">
+                        Our service encountered an error. Please try again later.
+                    </p>
+                </div>
+
+                <a href="/" class="mt-8 inline-block font-semibold text-sm border-2 border-dark-primary text-dark-primary px-5 py-2 rounded-xl hover:bg-dark-primary hover:text-light-bg transition-all duration-300">
+                    Back to Home
+                </a>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark-primary text-gray-300 py-12 px-6">
+        <div class="container mx-auto">
+            <div class="text-center">
+                <div class="mt-4 flex justify-center gap-6">
+                    <a href="https://drive.google.com/file/d/1jnoCaOhTFBV1Imu_NSIs_pM8pjAPRIDB/view?usp=sharing" class="text-xs hover:text-white transition-colors" target="_blank">Disclaimer</a>
+                    <a href="https://drive.google.com/file/d/1olxj95vlUMtUe8QS0FsjLipGQJRVoect/view?usp=sharing" class="text-xs hover:text-white transition-colors" target="_blank">Privacy Policy</a>
+                    <a href="https://drive.google.com/file/d/19Mcoy1GESao2C4ywsC7GLfRWOQcOQNa2/view?usp=sharing" class="text-xs hover:text-white transition-colors" target="_blank">Terms of Service</a>
+                </div>
+            </div>
+            <p class="text-xs text-center text-gray-400 mt-8 max-w-4xl mx-auto">
+                Disclaimer: This service provides consolidated information from publicly available documents, resources. This is not financial advice, an endorsement, or a recommendation. We are not registered with SEBI as research analyst or investment advisor. All information is for informational purpose only. Please conduct your own due diligence.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const state = params.get('state');
+
+            const successBox = document.getElementById('success-box');
+            const errorBox = document.getElementById('error-box');
+
+            if (state === 'success') {
+                successBox.classList.remove('hidden');
+            } else {
+                // Default to showing the error message
+                errorBox.classList.remove('hidden');
+            }
+        });
+    </script>
+
+</body>
+</html>
